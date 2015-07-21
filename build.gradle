@@ -1,0 +1,33 @@
+ext {
+    windows = System.properties['os.name'].toLowerCase().contains('windows')
+}
+task test << {
+    def failedProjects = []
+    def ignoreHidden = ~/^(?!\.).*/
+    projectDir.eachDirMatch(ignoreHidden) { dir ->
+        dir.eachFileMatch(/build.gradle/) {
+            if (execute(dir, "gradle test") != 0) {
+                failedProjects << (dir.path - projectDir.path)
+            }
+        }
+        dir.eachFileMatch(/pom.xml/) {
+            if (execute(dir, "mvn test") != 0) {
+                failedProjects << (dir.path - projectDir.path)
+            }
+        }
+    }
+    assert failedProjects == []
+}
+
+private def execute(File directory, String command) {
+        println command
+        def cmd = ["cmd.exe", "/C"]
+        def sh = ["sh", "-c"]
+        def process = new ProcessBuilder((windows ? cmd : sh) + command)
+                .redirectErrorStream(true)
+                .directory(directory)
+                .start()
+        process.inputStream.eachLine { println it }
+        process.waitFor();
+        return process.exitValue()
+}
