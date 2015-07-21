@@ -8,7 +8,7 @@ env:
 install:
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - cd .stagemonitor
-  - gradle installIntegrationSnapshot
+  - gradle compileJava installIntegrationSnapshot
 script:
   - gradle test
 cache:
