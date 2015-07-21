@@ -5,6 +5,10 @@ jdk:
 env:
   matrix:
   - TERM=dumb
+install:
+  - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
+  - cd .stagemonitor
+  - gradle installIntegrationSnapshot
 script:
   - gradle test
 cache:
