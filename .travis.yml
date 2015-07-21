@@ -7,8 +7,9 @@ env:
   - TERM=dumb
 install:
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
-  - cd .stagemonitor
+  - pushd .stagemonitor
   - gradle compileJava installIntegrationSnapshot
+  - popd
 script:
   - gradle test
 cache:
