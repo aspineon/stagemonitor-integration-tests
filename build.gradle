@@ -6,12 +6,14 @@ task test << {
     def ignoreHidden = ~/^(?!\.).*/
     projectDir.eachDirMatch(ignoreHidden) { dir ->
         dir.eachFileMatch(/build.gradle/) {
-            if (execute(dir, "gradle test") != 0) {
+            if (execute(dir, "gradle compileJava") == 0 && execute(dir, "gradle test") != 0) {
                 failedProjects << (dir.path - projectDir.path)
             }
         }
         dir.eachFileMatch(/pom.xml/) {
-            if (execute(dir, "mvn test") != 0) {
+            // if compiling the project fails, the java versions probably don't match
+            // if a project requires java 8 but we are testing with java 7 just ignore that project
+            if (execute(dir, "mvn compile") == 0 && execute(dir, "mvn test") != 0) {
                 failedProjects << (dir.path - projectDir.path)
             }
         }
