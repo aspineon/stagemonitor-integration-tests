@@ -1,35 +1,136 @@
-ext {
-    windows = System.properties['os.name'].toLowerCase().contains('windows')
+import de.undercouch.gradle.tasks.download.Download
+
+plugins {
+	id "de.undercouch.download" version "1.2"
 }
-task test << {
-    def failedProjects = []
-    def ignoreHidden = ~/^(?!\.).*/
-    projectDir.eachDirMatch(ignoreHidden) { dir ->
-        dir.eachFileMatch(/build.gradle/) {
-            if (execute(dir, "gradle clean compileJava") == 0 && execute(dir, "gradle test") != 0) {
-                failedProjects << (dir.path - projectDir.path)
-            }
-        }
-        dir.eachFileMatch(/pom.xml/) {
-            // if compiling the project fails, the java versions probably don't match
-            // if a project requires java 8 but we are testing with java 7 just ignore that project
-            if (execute(dir, "mvn --batch-mode clean compile") == 0 && execute(dir, "mvn --batch-mode test") != 0) {
-                failedProjects << (dir.path - projectDir.path)
-            }
-        }
-    }
-    assert failedProjects == []
+apply from: 'execute.gradle'
+apply from: 'servers.gradle'
+
+ext {
+	windows = System.properties['os.name'].toLowerCase().contains('windows')
+	testsToExecute = ~/.*/
+	if (project.hasProperty('tests')) testsToExecute = tests
 }
 
-private def execute(File directory, String command) {
-        println command
-        def cmd = ["cmd.exe", "/C"]
-        def sh = ["sh", "-c"]
-        def process = new ProcessBuilder((windows ? cmd : sh) + command)
-                .redirectErrorStream(true)
-                .directory(directory)
-                .start()
-        process.inputStream.eachLine { println it }
-        process.waitFor();
-        return process.exitValue()
+task clean() {
+	if (buildDir.exists()) buildDir.deleteDir()
+}
+
+task downloadServers(type: Download) {
+	src servers.collect { it.value.downloadUrl } - null
+	file('.downloads').mkdir()
+	dest file('.downloads')
+	overwrite false
+}
+
+task test << {
+	def failedProjects = []
+	projectDir.eachDirMatch(testsToExecute) { dir ->
+		dir.eachFileMatch(/stagemonitor-integration-test.properties/) { propertiesFile ->
+			Properties props = new Properties()
+			propertiesFile.withInputStream { props.load(it) }
+			println "\n####################"
+			println "# ${dir.path - projectDir.path}"
+			println "####################"
+			checkCompatibilityAndExecuteTest(props, dir, failedProjects)
+		}
+	}
+	assert failedProjects == []
+	println "All tests where executed successfully"
+}
+test.dependsOn clean
+test.dependsOn downloadServers
+
+private void checkCompatibilityAndExecuteTest(Properties props, dir, failedProjects) {
+	if (isLocalJavaVersionCompatible(props.javaVersions.split(/\s*,\s*/))) {
+		props.server.split(/\s*,\s*/).each { server ->
+			assert servers[server]
+			if (isLocalJavaVersionCompatible(servers[server].javaVersions)) {
+				if (!executeTest(dir, props, server)) {
+					failedProjects << (dir.path - projectDir.path)
+				}
+			} else {
+				println "This server is skipped because the local version of java is not compatible with it."
+			}
+		}
+	} else {
+		println "This test is skipped because the local version of java is not compatible with it."
+	}
+}
+
+boolean executeTest(File dir, Properties props, String serverName) {
+	println serverName
+	def server = servers[serverName]
+	if (!isLocalJavaVersionCompatible(server.javaVersions)) {
+		println "This server is skipped because the local version of java is not compatible with it."
+		return true
+	}
+	server.install()
+
+	if (props.buildCommand) execute(props.buildCommand, dir)
+
+	server.deploy(dir, props)
+
+	Closeable serverShutDown = startServer(server, dir, props)
+	try {
+		waitForIt(props.baseUrl)
+		executeTestScript(dir, props)
+		println "Successfully executed tests"
+		return true
+	} catch (Exception | AssertionError e) {
+		println "An error occured while executing tests"
+		e.printStackTrace()
+		return false
+	} finally {
+		if (!project.hasProperty('noShutdown')) {
+			serverShutDown.close()
+			if (buildDir.exists()) buildDir.deleteDir()
+		} else {
+			Runtime.getRuntime().addShutdownHook { server.close() }
+			Thread.currentThread().join()
+		}
+	}
+}
+
+Closeable startServer(def server, File testDir, Properties props) {
+	println "starting server..."
+	def proc = server.start(testDir, props)
+
+	return {
+		println "stopping server..."
+		server.stop(proc)
+		println "server stopped"
+	} as Closeable
+}
+
+task startServer << {
+	def srv = servers[server]
+	srv.install()
+	Runtime.getRuntime().addShutdownHook { srv.stop() }
+	srv.start(null, null).waitFor()
+}
+
+void executeTestScript(File testDir, Properties props) {
+	GroovyShell shell = new GroovyShell(new Binding([props: props]))
+	shell.evaluate(file('DefaultTestScript.groovy'))
+
+	testDir.eachFileMatch("TestScript.groovy") { shell.evaluate(it) }
+}
+
+void waitForIt(String url, int timeoutSec = 60) {
+	long timeout = System.currentTimeMillis() + timeoutSec * 1000
+	while (timeout > System.currentTimeMillis()) {
+		try {
+			url.toURL().text
+			println "started server"
+			return
+		} catch (e) {
+			sleep(100)
+		}
+	}
+	println "The server failed to start within ${timeoutSec} sec"
+}
+
+boolean isLocalJavaVersionCompatible(compatibleVersions) {
+	compatibleVersions.any { System.getProperty('java.specification.version') == it }
 }

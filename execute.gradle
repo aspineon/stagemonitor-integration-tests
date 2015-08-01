@@ -1,0 +1,30 @@
+ext {
+	executeGetResult = this.&executeGetResult
+	executeInBackground = this.&executeInBackground
+	execute = this.&execute
+}
+
+String executeGetResult(String command, File directory = null) {
+	def result = []
+	execute(command, directory, true, { result << it })
+	return result.join('\n')
+}
+
+Process executeInBackground(String command, File directory = null) {
+	return execute(command, directory, false)
+}
+
+Process execute(String command, File directory = null, boolean waitFor = true, lineHandler = { println it }) {
+	println command
+	def cmd = ["cmd.exe", "/C"]
+	def sh = ["sh", "-c"]
+	def builder = new ProcessBuilder((windows ? cmd : sh) + command)
+			.redirectErrorStream(true)
+			.directory(directory)
+
+	def process = builder.start()
+	Thread.start { process.inputStream.eachLine(lineHandler) }
+	if (waitFor) process.waitFor()
+
+	return process
+}

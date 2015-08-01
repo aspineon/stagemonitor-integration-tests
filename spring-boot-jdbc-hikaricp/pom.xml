@@ -17,6 +17,11 @@
 			<version>integration-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.stagemonitor</groupId>
+			<artifactId>stagemonitor-os</artifactId>
+			<version>integration-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>2.3.9</version>

@@ -1,0 +1,80 @@
+ext {
+	debugOptions = 'JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"'
+
+	servers = [
+			'spring-boot': [
+					javaVersions: ["1.6", "1.7", "1.8"],
+					install     : {},
+					start       : { testDir, props -> executeInBackground("mvn --batch-mode clean spring-boot:run", testDir) },
+					stop        : { proc -> proc.destroy(); proc.waitFor() },
+					deploy      : { testDir, props -> }
+			],
+//			'jboss-6.1'  : [
+//					javaVersions: ["1.6", "1.7"],
+//					downloadUrl : "http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final.zip",
+//					install     : {
+//						copy {
+//							from zipTree(file(".downloads/jboss-as-distribution-6.1.0.Final.zip"))
+//							into "$buildDir/servers/"
+//						}
+//						file("$buildDir/servers/jboss-6.1.0.Final/bin/standalone.conf").append("\n$debugOptions")
+//					},
+//					start       : { testDir, props -> executeInBackground("$buildDir/servers/jboss-6.1.0.Final/bin/run.sh") },
+//					stop        : { execute("$buildDir/servers/jboss-6.1.0.Final/bin/shutdown.sh -S") },
+//					deploy      : { testDir, props ->
+//						copy {
+//							from "$testDir/${props.deploymentFiles}"
+//							into "$buildDir/servers/jboss-6.1.0.Final/deploy/"
+//						}
+//					}
+//			],
+			'jboss-7.1'  : [
+					javaVersions: ["1.6", "1.7"],
+					downloadUrl : "http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip",
+					install     : {
+						copy {
+							from zipTree(file(".downloads/jboss-as-7.1.1.Final.zip"))
+							into "$buildDir/servers/"
+						}
+						file("$buildDir/servers/jboss-as-7.1.1.Final/bin/standalone.conf").append("\n$debugOptions")
+					},
+					start       : { testDir, props -> executeInBackground("$buildDir/servers/jboss-as-7.1.1.Final/bin/standalone.sh") },
+					stop        : {
+						execute("$buildDir/servers/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect command=:shutdown")
+					},
+					deploy      : { testDir, props ->
+						copy {
+							from "$testDir/${props.deploymentFiles}"
+							into "$buildDir/servers/jboss-as-7.1.1.Final/standalone/deployments/"
+						}
+					}
+			],
+			'tomcat-7'   : tomcat("7.0.63", ["1.6", "1.7", "1.8"], "http://artfiles.org/apache.org/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.zip"),
+			'tomcat-8'   : tomcat("8.0.24", ["1.6", "1.7", "1.8"], "http://apache.lauf-forum.at/tomcat/tomcat-8/v8.0.24/bin/apache-tomcat-8.0.24.zip")
+	]
+}
+
+def tomcat(String version, List<String> javaVersions, String downloadUrl) {
+	[
+			javaVersions: javaVersions,
+			downloadUrl : downloadUrl,
+			install     : {
+				copy {
+					from zipTree(file(".downloads/apache-tomcat-${version}.zip"))
+					into "$buildDir/servers/"
+				}
+				file("$buildDir/servers/apache-tomcat-${version}/bin/setenv.sh") << debugOptions.replace("JAVA_OPTS", "CATALINA_OPTS")
+				execute("chmod 744 $buildDir/servers/apache-tomcat-${version}/bin/*.sh")
+			},
+			start       : { testDir, props -> executeInBackground("$buildDir/servers/apache-tomcat-${version}/bin/catalina.sh run") },
+			stop        : {
+				execute("$buildDir/servers/apache-tomcat-${version}/bin/catalina.sh stop 20 -force")
+			},
+			deploy      : { testDir, props ->
+				copy {
+					from "$testDir/${props.deploymentFiles}"
+					into "$buildDir/servers/apache-tomcat-${version}/webapps"
+				}
+			}
+	]
+}

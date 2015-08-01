@@ -24,6 +24,11 @@
 			<version>integration-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.stagemonitor</groupId>
+			<artifactId>stagemonitor-os</artifactId>
+			<version>integration-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
