@@ -104,6 +104,7 @@ Closeable startServer(def server, File testDir, Properties props) {
 }
 
 task startServer << {
+	assert servers.keySet().contains(server)
 	def srv = servers[server]
 	srv.install()
 	Runtime.getRuntime().addShutdownHook { srv.stop() }
