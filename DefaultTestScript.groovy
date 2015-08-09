@@ -42,7 +42,7 @@ def loadFallbackPropertiesIfExecutedDirectly(String testProject) {
 
 def parseJson(json) {
 	if (json instanceof URL) {
-		return new groovy.json.JsonSlurper().parse(json)
+		return new groovy.json.JsonSlurper().parseText(json.text)
 	}
 	return new groovy.json.JsonSlurper().parseText(json as String)
 }

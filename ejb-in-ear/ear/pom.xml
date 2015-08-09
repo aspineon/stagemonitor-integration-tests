@@ -56,11 +56,6 @@
             <artifactId>jboss-ejb-in-ear-ejb</artifactId>
             <type>ejb</type>
         </dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.stagemonitor</groupId>-->
-			<!--<artifactId>stagemonitor-web</artifactId>-->
-			<!--<version>0.17.0-SNAPSHOT</version>-->
-		<!--</dependency>-->
     </dependencies>
 
     <build>

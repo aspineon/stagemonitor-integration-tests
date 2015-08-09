@@ -59,21 +59,21 @@ private void checkCompatibilityAndExecuteTest(Properties props, dir, failedProje
 }
 
 boolean executeTest(File dir, Properties props, String serverName) {
-	println serverName
-	def server = servers[serverName]
-	if (!isLocalJavaVersionCompatible(server.javaVersions)) {
-		println "This server is skipped because the local version of java is not compatible with it."
-		return true
-	}
-	server.install()
-
-	if (props.buildCommand) assert execute(props.buildCommand, dir).exitValue() == 0
-
-	println "# deploying..."
-	server.deploy(dir, props)
-
-	Closeable serverShutDown = startServer(server, dir, props)
 	try {
+		println serverName
+		def server = servers[serverName]
+		if (!isLocalJavaVersionCompatible(server.javaVersions)) {
+			println "This server is skipped because the local version of java is not compatible with it."
+			return true
+		}
+		server.install()
+
+		if (props.buildCommand) assert execute(props.buildCommand, dir).exitValue() == 0
+
+		println "# deploying..."
+		server.deploy(dir, props)
+
+		Closeable serverShutDown = startServer(server, dir, props)
 		waitForIt(props.baseUrl)
 		executeTestScript(dir, props)
 		println "Successfully executed tests"
