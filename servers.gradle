@@ -6,7 +6,11 @@ ext {
 					javaVersions: ["1.6", "1.7", "1.8"],
 					install     : {},
 					start       : { testDir, props -> executeInBackground("mvn --batch-mode clean spring-boot:run", testDir) },
-					stop        : { proc -> proc.destroy(); proc.waitFor() },
+					stop        : {proc ->
+						proc.destroy()
+						proc.waitFor()
+						execute("pkill -9 -f spring-boot")
+					},
 					deploy      : { testDir, props -> }
 			],
 //			'jboss-6.1'  : [

@@ -59,6 +59,7 @@ private void checkCompatibilityAndExecuteTest(Properties props, dir, failedProje
 }
 
 boolean executeTest(File dir, Properties props, String serverName) {
+	Closeable serverShutDown = {}
 	try {
 		println serverName
 		def server = servers[serverName]
@@ -73,7 +74,7 @@ boolean executeTest(File dir, Properties props, String serverName) {
 		println "# deploying..."
 		server.deploy(dir, props)
 
-		Closeable serverShutDown = startServer(server, dir, props)
+		serverShutDown = startServer(server, dir, props)
 		waitForIt(props.baseUrl)
 		executeTestScript(dir, props)
 		println "Successfully executed tests"
@@ -126,11 +127,11 @@ void waitForIt(String url, int timeoutSec = 60) {
 			url.toURL().text
 			println "# started server"
 			return
-		} catch (e) {
+		} catch (Exception e) {
 			sleep(100)
 		}
 	}
-	println "# The server failed to start within ${timeoutSec} sec"
+	throw new IllegalStateException("# The server failed to start within ${timeoutSec} sec")
 }
 
 boolean isLocalJavaVersionCompatible(compatibleVersions) {
