@@ -45,6 +45,8 @@ ext {
 					deploy      : { testDir, props ->
 						def src = "$testDir/${props.deploymentFiles}"
 						def dest = "$buildDir/servers/jboss-as-7.1.1.Final/standalone/deployments/"
+						assert file(src).exists()
+						assert file(dest).exists()
 						println "copy from $src to $dest"
 						copy {
 							from src
@@ -77,8 +79,10 @@ def tomcat(String version, List<String> javaVersions, String downloadUrl) {
 				execute("$buildDir/servers/apache-tomcat-${version}/bin/catalina.sh stop 20 -force")
 			},
 			deploy      : { testDir, props ->
+				String src = "$testDir/${props.deploymentFiles}"
+				assert file(src).exists()
 				copy {
-					from "$testDir/${props.deploymentFiles}"
+					from src
 					into "$buildDir/servers/apache-tomcat-${version}/webapps"
 				}
 			}

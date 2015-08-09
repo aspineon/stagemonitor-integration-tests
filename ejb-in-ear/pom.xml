@@ -65,6 +65,31 @@
         <module>ear</module>
     </modules>
 
+	<repositories>
+		<repository>
+			<id>jboss-ga-repository</id>
+			<url>http://maven.repository.redhat.com/techpreview/all</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>jboss-ga-plugin-repository</id>
+			<url>http://maven.repository.redhat.com/techpreview/all</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
     <dependencyManagement>
         <dependencies>
             <!-- Define the version of the EJB jar so that we don't need 

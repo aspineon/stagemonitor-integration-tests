@@ -67,9 +67,9 @@ boolean executeTest(File dir, Properties props, String serverName) {
 	}
 	server.install()
 
-	if (props.buildCommand) execute(props.buildCommand, dir)
+	if (props.buildCommand) assert execute(props.buildCommand, dir).exitValue() == 0
 
-	println " # deploying..."
+	println "# deploying..."
 	server.deploy(dir, props)
 
 	Closeable serverShutDown = startServer(server, dir, props)
@@ -100,7 +100,7 @@ Closeable startServer(def server, File testDir, Properties props) {
 	return {
 		println "# stopping server..."
 		server.stop(proc)
-		println " # server stopped"
+		println "# server stopped"
 	} as Closeable
 }
 

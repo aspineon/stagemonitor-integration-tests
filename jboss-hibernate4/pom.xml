@@ -56,6 +56,31 @@
         <maven.compiler.source>1.6</maven.compiler.source>
     </properties>
 
+	<repositories>
+		<repository>
+			<id>jboss-ga-repository</id>
+			<url>http://maven.repository.redhat.com/techpreview/all</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>jboss-ga-plugin-repository</id>
+			<url>http://maven.repository.redhat.com/techpreview/all</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
     <dependencyManagement>
         <dependencies>
             <!-- JBoss distributes a complete set of Java EE 6 APIs including 
