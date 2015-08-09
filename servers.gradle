@@ -83,7 +83,8 @@ def tomcat(String version, List<String> javaVersions, String downloadUrl) {
 			},
 			start       : { testDir, props -> executeInBackground("$buildDir/servers/apache-tomcat-${version}/bin/catalina.sh run") },
 			stop        : {
-				execute("$buildDir/servers/apache-tomcat-${version}/bin/catalina.sh stop 20 -force")
+				execute("$buildDir/servers/apache-tomcat-${version}/bin/catalina.sh stop 40")
+				execute("pkill -9 -f $buildDir/servers/apache-tomcat-${version}")
 			},
 			deploy      : { testDir, props ->
 				String src = "$testDir/${props.deploymentFiles}"
