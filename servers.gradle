@@ -43,10 +43,15 @@ ext {
 						execute("$buildDir/servers/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect command=:shutdown")
 					},
 					deploy      : { testDir, props ->
+						def src = "$testDir/${props.deploymentFiles}"
+						def dest = "$buildDir/servers/jboss-as-7.1.1.Final/standalone/deployments/"
+						println "copy from $src to $dest"
 						copy {
-							from "$testDir/${props.deploymentFiles}"
-							into "$buildDir/servers/jboss-as-7.1.1.Final/standalone/deployments/"
+							from src
+							into dest
 						}
+						println "deployments:"
+						file(dest).eachFile { println it }
 					}
 			],
 			'tomcat-6'   : tomcat("6.0.44", ["1.6", "1.7"], "http://mirror.synyx.de/apache/tomcat/tomcat-6/v6.0.44/bin/apache-tomcat-6.0.44.zip"),

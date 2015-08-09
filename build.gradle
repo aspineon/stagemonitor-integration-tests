@@ -36,7 +36,7 @@ task test << {
 		}
 	}
 	assert failedProjects == []
-	println "All tests where executed successfully"
+	println "# All tests where executed successfully"
 }
 test.dependsOn clean
 test.dependsOn downloadServers
@@ -50,7 +50,7 @@ private void checkCompatibilityAndExecuteTest(Properties props, dir, failedProje
 					failedProjects << (dir.path - projectDir.path)
 				}
 			} else {
-				println "This server is skipped because the local version of java is not compatible with it."
+				println "# This server is skipped because the local version of java is not compatible with it."
 			}
 		}
 	} else {
@@ -69,6 +69,7 @@ boolean executeTest(File dir, Properties props, String serverName) {
 
 	if (props.buildCommand) execute(props.buildCommand, dir)
 
+	println " # deploying..."
 	server.deploy(dir, props)
 
 	Closeable serverShutDown = startServer(server, dir, props)
@@ -93,13 +94,13 @@ boolean executeTest(File dir, Properties props, String serverName) {
 }
 
 Closeable startServer(def server, File testDir, Properties props) {
-	println "starting server..."
+	println "# starting server..."
 	def proc = server.start(testDir, props)
 
 	return {
-		println "stopping server..."
+		println "# stopping server..."
 		server.stop(proc)
-		println "server stopped"
+		println " # server stopped"
 	} as Closeable
 }
 
@@ -123,13 +124,13 @@ void waitForIt(String url, int timeoutSec = 60) {
 	while (timeout > System.currentTimeMillis()) {
 		try {
 			url.toURL().text
-			println "started server"
+			println "# started server"
 			return
 		} catch (e) {
 			sleep(100)
 		}
 	}
-	println "The server failed to start within ${timeoutSec} sec"
+	println "# The server failed to start within ${timeoutSec} sec"
 }
 
 boolean isLocalJavaVersionCompatible(compatibleVersions) {
