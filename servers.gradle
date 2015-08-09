@@ -4,6 +4,7 @@ ext {
 	servers = [
 			'spring-boot': [
 					javaVersions: ["1.6", "1.7", "1.8"],
+					openJdk     : true,
 					install     : {},
 					start       : { testDir, props -> executeInBackground("mvn --batch-mode clean spring-boot:run", testDir) },
 					stop        : {proc ->
@@ -34,6 +35,7 @@ ext {
 //			],
 			'jboss-7.1'  : [
 					javaVersions: ["1.6", "1.7"],
+					openJdk     : false,
 					downloadUrl : "http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip",
 					install     : {
 						copy {
@@ -70,6 +72,7 @@ def tomcat(String version, List<String> javaVersions, String downloadUrl) {
 	[
 			javaVersions: javaVersions,
 			downloadUrl : downloadUrl,
+			openJdk     : true,
 			install     : {
 				copy {
 					from zipTree(file(".downloads/apache-tomcat-${version}.zip"))

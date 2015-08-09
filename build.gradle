@@ -45,7 +45,8 @@ private void checkCompatibilityAndExecuteTest(Properties props, dir, failedProje
 	if (isLocalJavaVersionCompatible(props.javaVersions.split(/\s*,\s*/))) {
 		props.server.split(/\s*,\s*/).each { server ->
 			assert servers[server]
-			if (isLocalJavaVersionCompatible(servers[server].javaVersions)) {
+			def srv = servers[server]
+			if (isLocalJavaVersionCompatible(srv.javaVersions, srv.openJdk)) {
 				if (!executeTest(dir, props, server)) {
 					failedProjects << (dir.path - projectDir.path)
 				}
@@ -134,6 +135,9 @@ void waitForIt(String url, int timeoutSec = 60) {
 	throw new IllegalStateException("# The server failed to start within ${timeoutSec} sec")
 }
 
-boolean isLocalJavaVersionCompatible(compatibleVersions) {
+boolean isLocalJavaVersionCompatible(compatibleVersions, boolean openJdkIsCompatible = true) {
+	if (!openJdkIsCompatible && System.getProperty("java.vm.name").contains("OpenJDK")) {
+		return false
+	}
 	compatibleVersions.any { System.getProperty('java.specification.version') == it }
 }
