@@ -11,7 +11,7 @@ env:
 install:
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - pushd .stagemonitor
-  - gradle test compileJava installIntegrationSnapshot
+  - gradle compileJava installIntegrationSnapshot
   - popd
 script:
   - gradle test
