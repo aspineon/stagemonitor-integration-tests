@@ -16,9 +16,9 @@ props.requestTraceContains.split(/\s*,\s*/).each {
 
 // Metrics
 def metrics = parseJson("${props.baseUrl}/stagemonitor/metrics".toURL())
-assert metrics?.gauges?."os.cpu.info.mhz"?.value >= 1
-assert metrics?.gauges?."jvm.memory.heap.init"?.value >= 1
-assert metrics?.timers?."request.All.server.time.total"?.count >= 1
+assert metrics?.gauges?."cpu_info_mhz"?.value >= 1
+assert metrics?.gauges?."jvm_memory_heap.init"?.value >= 1
+assert metrics?.timers?."response_time_server.All.All"?.count >= 1
 
 // FileServlet
 assert "${props.baseUrl}/stagemonitor/public/static/rum/boomerang.js".toURL().text.contains("var test;")
