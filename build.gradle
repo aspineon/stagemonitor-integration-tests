@@ -12,7 +12,7 @@ ext {
 	if (project.hasProperty('tests')) testsToExecute = tests
 }
 
-task clean() {
+task clean << {
 	if (buildDir.exists()) buildDir.deleteDir()
 }
 
@@ -89,7 +89,7 @@ boolean executeTest(File dir, Properties props, String serverName) {
 			serverShutDown.close()
 			if (buildDir.exists()) buildDir.deleteDir()
 		} else {
-			Runtime.getRuntime().addShutdownHook { server.close() }
+			Runtime.getRuntime().addShutdownHook { serverShutDown.close() }
 			Thread.currentThread().join()
 		}
 	}

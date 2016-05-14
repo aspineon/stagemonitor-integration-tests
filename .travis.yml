@@ -11,10 +11,10 @@ env:
 install:
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - pushd .stagemonitor
-  - gradle compileJava installIntegrationSnapshot
+  - ./gradlew compileJava installIntegrationSnapshot
   - popd
 script:
-  - gradle test
+  - ./gradlew test
 cache:
   directories:
   - $HOME/.m2
