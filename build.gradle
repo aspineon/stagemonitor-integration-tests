@@ -136,6 +136,7 @@ void waitForIt(String url, int timeoutSec = 60) {
 }
 
 boolean isLocalJavaVersionCompatible(compatibleVersions, boolean openJdkIsCompatible = true) {
+    println "Local Java version: ${System.getProperty('java.specification.version')}; compatible versions: $compatibleVersions; OpenJDK: $openJdkIsCompatible"
 	if (!openJdkIsCompatible && System.getProperty("java.vm.name").contains("OpenJDK")) {
 		return false
 	}
