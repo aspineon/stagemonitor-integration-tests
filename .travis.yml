@@ -9,10 +9,14 @@ env:
   matrix:
   - TERM=dumb
 install:
+  - export JAVA_HOME_TEMP=$JAVA_HOME
+  - jdk_switcher use oraclejdk7
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - pushd .stagemonitor
   - ./gradlew compileJava installIntegrationSnapshot
   - popd
+  - export JAVA_HOME=$JAVA_HOME_TEMP
+  - echo JAVA_HOME
 script:
   - ./gradlew test
 cache:
