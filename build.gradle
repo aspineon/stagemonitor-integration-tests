@@ -121,7 +121,7 @@ void executeTestScript(File testDir, Properties props) {
 	testDir.eachFileMatch("TestScript.groovy") { shell.evaluate(it) }
 }
 
-void waitForIt(String url, int timeoutSec = 60) {
+void waitForIt(String url, int timeoutSec = 300) {
 	long timeout = System.currentTimeMillis() + timeoutSec * 1000
 	while (timeout > System.currentTimeMillis()) {
 		try {
