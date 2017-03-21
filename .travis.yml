@@ -10,7 +10,7 @@ env:
   - TERM=dumb
 install:
   - export JAVA_HOME_TEMP=$JAVA_HOME
-  - jdk_switcher use oraclejdk7
+  - jdk_switcher use oraclejdk8
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - pushd .stagemonitor
   - ./gradlew compileJava installIntegrationSnapshot
