@@ -13,6 +13,7 @@ install:
   - jdk_switcher use oraclejdk8
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - pushd .stagemonitor
+  - git --no-pager log -n 1 --pretty=oneline
   - ./gradlew compileJava installIntegrationSnapshot
   - popd
   - export JAVA_HOME=$JAVA_HOME_TEMP
