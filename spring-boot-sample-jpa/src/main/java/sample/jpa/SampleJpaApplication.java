@@ -25,7 +25,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.stagemonitor.core.Stagemonitor;
-import org.stagemonitor.web.WebPlugin;
+import org.stagemonitor.web.servlet.ServletPlugin;
 
 @SpringBootApplication
 public class SampleJpaApplication implements EmbeddedServletContainerCustomizer {
@@ -40,7 +40,7 @@ public class SampleJpaApplication implements EmbeddedServletContainerCustomizer 
 		container.addInitializers(new ServletContextInitializer() {
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
-				new WebPlugin().onStartup(null, servletContext);
+				new ServletPlugin().onStartup(null, servletContext);
 			}
 		});
 	}
