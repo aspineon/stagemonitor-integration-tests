@@ -18,7 +18,7 @@ package org.jboss.as.quickstarts.ear.ejb;
 
 import javax.ejb.Stateful;
 
-import org.stagemonitor.requestmonitor.MonitorRequests;
+import org.stagemonitor.tracing.Traced;
 
 /**
  * A simple Hello World EJB. The EJB does not use an interface.
@@ -34,7 +34,7 @@ public class GreeterEJB {
      *            the name of the person to be greeted
      * @return the personalised greeting.
      */
-	@MonitorRequests
+    @Traced
     public String sayHello(String name) {
         return "Hello " + name;
     }
