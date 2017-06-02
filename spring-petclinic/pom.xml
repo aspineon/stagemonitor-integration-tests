@@ -73,7 +73,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.stagemonitor</groupId>
-			<artifactId>stagemonitor-web</artifactId>
+			<artifactId>stagemonitor-web-servlet</artifactId>
 			<version>${stagemonitor.version}</version>
 		</dependency>
 		<dependency>
