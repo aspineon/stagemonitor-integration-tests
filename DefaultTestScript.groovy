@@ -20,9 +20,6 @@ assert metrics?.find { it.name == "cpu_info_mhz"}?.values?.value >= 1
 assert metrics?.find { it.name == "jvm_memory_heap" && it.tags?.type == "init"}?.values?.value >= 1
 assert metrics?.find { it.name == "response_time" && it.tags?.operation_name == "All" }?.values?.count >= 1
 
-// FileServlet
-assert "${props.baseUrl}/stagemonitor/public/static/rum/boomerang.js".toURL().text.contains("var test;")
-
 String getJavascriptVariable(String htmlPage, String variableName) {
 	def m = htmlPage =~ /$variableName = (.*)[,;]/
 	assert m.find(): "The page does not contain a request trace"
