@@ -142,3 +142,7 @@ boolean isLocalJavaVersionCompatible(compatibleVersions, boolean openJdkIsCompat
 	}
 	compatibleVersions.any { System.getProperty('java.specification.version') == it }
 }
+
+task wrapper(type: Wrapper) {
+	gradleVersion = "4.1"
+}
