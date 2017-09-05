@@ -11,7 +11,7 @@ assert page.contains('<iframe id="stagemonitor-modal"'): "The page does not cont
 // Profiler
 def requestTrace = getJavascriptVariable(page, "data")
 props.requestTraceContains.split(/\s*,\s*/).each {
-	assert requestTrace.contains(it): "The request trace does not contain '$it'"
+	assert requestTrace.contains(it)
 }
 
 // Metrics
