@@ -1,17 +1,15 @@
 language: java
 sudo: false
-dist: precise
 jdk:
  - openjdk6
- - oraclejdk7
  - openjdk7
- - oraclejdk8
+ - openjdk8
 env:
   matrix:
   - TERM=dumb
 install:
   - export JAVA_HOME_TEMP=$JAVA_HOME
-  - jdk_switcher use oraclejdk8
+  - jdk_switcher use openjdk8
   - git clone https://github.com/stagemonitor/stagemonitor.git .stagemonitor
   - pushd .stagemonitor
   - git --no-pager log -n 1 --pretty=oneline
