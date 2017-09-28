@@ -19,6 +19,7 @@ install:
   - git --no-pager log -n 1 --pretty=oneline
   - ./gradlew compileJava installIntegrationSnapshot
   - popd
+  - ./gradlew clean # download gradle and plugins with java 8 due to https://github.com/gradle/gradle/issues/2421
   - export JAVA_HOME=$JAVA_HOME_TEMP
   - echo $JAVA_HOME
   - java -version
