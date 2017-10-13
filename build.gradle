@@ -115,8 +115,10 @@ task startServer << {
 }
 
 void executeTestScript(File testDir, Properties props) {
-	GroovyShell shell = new GroovyShell(new Binding([props: props]))
-	shell.evaluate(file('DefaultTestScript.groovy'))
+	GroovyShell shell = new GroovyShell(new Binding([props: props, execute: execute]))
+	if (!props.skipDefaultTestScript) {
+		shell.evaluate(file('DefaultTestScript.groovy'))
+	}
 
 	testDir.eachFileMatch("TestScript.groovy") { shell.evaluate(it) }
 }

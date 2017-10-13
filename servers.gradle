@@ -62,6 +62,35 @@ ext {
 						file(dest).eachFile { println it }
 					}
 			],
+			'wildfly-10'  : [
+					javaVersions: ["1.8"],
+					openJdk     : true,
+					downloadUrl : "http://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.zip",
+					install     : {
+						copy {
+							from zipTree(file(".downloads/wildfly-10.1.0.Final.zip"))
+							into "$buildDir/servers/"
+						}
+						file("$buildDir/servers/wildfly-10.1.0.Final/bin/standalone.conf").append("\n$debugOptions")
+					},
+					start       : { testDir, props -> executeInBackground("$buildDir/servers/wildfly-10.1.0.Final/bin/standalone.sh") },
+					stop        : {
+						execute("$buildDir/servers/wildfly-10.1.0.Final/bin/jboss-cli.sh --connect command=:shutdown")
+					},
+					deploy      : { testDir, props ->
+						def src = "$testDir/${props.deploymentFiles}"
+						def dest = "$buildDir/servers/wildfly-10.1.0.Final/standalone/deployments/"
+						assert file(src).exists()
+						assert file(dest).exists()
+						println "copy from $src to $dest"
+						copy {
+							from src
+							into dest
+						}
+						println "deployments:"
+						file(dest).eachFile { println it }
+					}
+			],
 			'tomcat-6'   : tomcat("6.0.44", ["1.6", "1.7"], "http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.44/bin/apache-tomcat-6.0.44.zip"),
 			'tomcat-7'   : tomcat("7.0.67", ["1.6", "1.7", "1.8"], "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.67/bin/apache-tomcat-7.0.67.zip"),
 			'tomcat-8'   : tomcat("8.0.24", ["1.6", "1.7", "1.8"], "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.24/bin/apache-tomcat-8.0.24.zip")
