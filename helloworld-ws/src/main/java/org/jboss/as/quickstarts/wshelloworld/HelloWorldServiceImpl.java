@@ -26,6 +26,7 @@ import org.stagemonitor.tracing.wrapper.StatelessSpanEventListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -74,18 +75,14 @@ public class HelloWorldServiceImpl implements HelloWorldService {
         checkState(contextInformation.getParent().getSpanWrapper().getStringTag(SpanUtils.OPERATION_TYPE).equals("http"), "Current span is not of type http");
         reportedSpans.clear();
         final String result = soapClient.sayHelloToName("World");
-        checkOperationName(reportedSpans.get(0), "sayHelloToName"); // SOAP server
-        checkOperationName(reportedSpans.get(1), "POST /HelloWorldService"); // HTTP server
-        checkOperationName(reportedSpans.get(2), "sayHelloToName"); // SOAP client
-        checkState(reportedSpans.size() == 3, "Expected 3 reported spans, got %d", reportedSpans.size());
+        List<String> operationNames = new ArrayList<String>();
+        for (SpanWrapper reportedSpan : reportedSpans) {
+            operationNames.add(reportedSpan.getOperationName());
+        }
+        final List<String> expectedOperationNames = Arrays.asList("sayHelloToName", "POST /HelloWorldService", "sayHelloToName");
+        checkState(operationNames.equals(expectedOperationNames), "Expected operationNames to be %s, but got %s", expectedOperationNames, operationNames);
         reportedSpans.clear();
         return result;
-    }
-
-    static void checkOperationName(SpanWrapper spanWrapper, String operationName) {
-        checkState(spanWrapper.getOperationName().equals(operationName),
-                "Expecting operation name to be '%s', but was '%s'",
-                operationName, spanWrapper.getOperationName());
     }
 
     static void checkState(boolean expression,
