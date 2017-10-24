@@ -34,6 +34,8 @@ import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
+import io.opentracing.tag.Tags;
+
 /**
  * The implementation of the HelloWorld JAX-WS Web Service.
  *
@@ -77,10 +79,10 @@ public class HelloWorldServiceImpl implements HelloWorldService {
         final String result = soapClient.sayHelloToName("World");
         List<String> operationNames = new ArrayList<String>();
         for (SpanWrapper reportedSpan : reportedSpans) {
-            operationNames.add(reportedSpan.getOperationName());
+            operationNames.add(String.format("%s (%s %s)",reportedSpan.getOperationName(), reportedSpan.getStringTag(Tags.SPAN_KIND.getKey()), reportedSpan.getStringTag(SpanUtils.OPERATION_TYPE)));
         }
-        final List<String> expectedOperationNames = Arrays.asList("sayHelloToName", "POST /HelloWorldService", "sayHelloToName");
-        checkState(operationNames.equals(expectedOperationNames), "Expected operationNames to be %s, but got %s", expectedOperationNames, operationNames);
+        final List<String> expectedOperationNames = Arrays.asList("sayHelloToName (client soap)", "POST /HelloWorldService (server http)", "sayHelloToName (server soap)");
+        checkState(operationNames.containsAll(expectedOperationNames), "Expected operationNames to contain %s, but got %s", expectedOperationNames, operationNames);
         reportedSpans.clear();
         return result;
     }
