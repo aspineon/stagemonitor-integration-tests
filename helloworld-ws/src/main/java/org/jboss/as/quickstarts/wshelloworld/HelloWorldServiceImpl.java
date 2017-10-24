@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -46,7 +47,7 @@ public class HelloWorldServiceImpl implements HelloWorldService {
 
     private HelloWorldService soapClient;
 
-    private final List<SpanWrapper> reportedSpans = new ArrayList<SpanWrapper>();
+    private final List<SpanWrapper> reportedSpans = Collections.synchronizedList(new ArrayList<SpanWrapper>());
 
     @PostConstruct
     public void onPostConstruct() {
