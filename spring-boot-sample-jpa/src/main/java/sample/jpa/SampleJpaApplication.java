@@ -16,16 +16,16 @@
 
 package sample.jpa;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.stagemonitor.core.Stagemonitor;
-import org.stagemonitor.web.servlet.ServletPlugin;
+import org.stagemonitor.web.servlet.initializer.ServletContainerInitializerUtil;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 @SpringBootApplication
 public class SampleJpaApplication implements EmbeddedServletContainerCustomizer {
@@ -40,7 +40,7 @@ public class SampleJpaApplication implements EmbeddedServletContainerCustomizer 
 		container.addInitializers(new ServletContextInitializer() {
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
-				new ServletPlugin().onStartup(null, servletContext);
+				ServletContainerInitializerUtil.registerStagemonitorServletContainerInitializers(servletContext);
 			}
 		});
 	}

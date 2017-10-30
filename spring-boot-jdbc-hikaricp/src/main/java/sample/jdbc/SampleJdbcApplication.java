@@ -24,7 +24,7 @@ public class SampleJdbcApplication implements EmbeddedServletContainerCustomizer
 		container.addInitializers(new ServletContextInitializer() {
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
-				new ServletPlugin().onStartup(null, servletContext);
+				ServletContainerInitializerUtil.registerStagemonitorServletContainerInitializers(servletContext);
 			}
 		});
 	}
