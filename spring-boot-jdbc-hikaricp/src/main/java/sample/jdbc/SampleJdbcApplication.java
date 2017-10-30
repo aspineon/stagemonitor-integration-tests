@@ -9,7 +9,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.stagemonitor.core.Stagemonitor;
-import org.stagemonitor.web.servlet.ServletPlugin;
+import org.stagemonitor.web.servlet.initializer.ServletContainerInitializerUtil;
 
 @SpringBootApplication
 public class SampleJdbcApplication implements EmbeddedServletContainerCustomizer {
